@@ -1,0 +1,564 @@
+package com.sowicm.little;
+
+// .*android:onclick="(\w+)".*
+// public void \1(View v)\n{\n\n}\n
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.Toast;
+import android.view.inputmethod.InputMethodManager;
+
+public class little extends Activity
+{
+	public enum commands { begin(0)
+	    , watchScreenBegin(100)
+	    , watchScreenEnd(101)
+	    , capture(102)
+		, mouseMove(1)
+		, lbutton(2)
+		, upwheel(3)
+		, mbutton(4)
+		, downwheel(5)
+		, rbutton(6)
+		, lbuttondown(7)
+		, lbuttonup(8)
+		, rbuttondown(9)
+		, rbuttonup(10)
+		, sendString(30)
+		, kdWin(31)
+		, kdUp(32)
+		, kdDown(33)
+		, kdRight(34)
+		, kdLeft(35)
+		, kdEsc(36)
+		, kdHome(37)
+		, kdEnd(38)
+		, kdEnter(39)
+		, kdSpace(40)
+		, CtrlAltDelete(41)
+		, AltF4(42)
+		, shutdown(60)
+		, switchUser(61)
+		, logOff(62)
+		, lock(63)
+		, restart(64)
+		, sleep(65)
+		, hibernate(66)
+		, run(70)
+		, runWithNoWindow(71)
+		, msgBox(72)
+		, showText(73)
+		, dark(74)
+		, hideCursor(75)
+		, multiCursor(76)
+		, showTextEx(77)
+		, showInNotepad(78)
+		;
+		private final int n;
+		commands(int _n)
+		{
+			this.n = _n;
+		}
+		public String toString()
+		{
+			return String.valueOf(this.n);
+		}
+    };
+    
+    private enum views{
+      main,
+      screen,
+      others,
+    };
+    
+    static final int idEndWatchDlg = 1;
+    static final int idSListDlg    = 2;
+    
+    private views   curView;
+    private long    lWarnedBeforeQuit;
+    
+    private static ArrayList<String> targets;
+    private ArrayList<String> slist;
+    
+    public little()
+    {
+        targets = new ArrayList<String>();
+        slist = new ArrayList<String>();
+    }
+	
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        
+        targets.clear();
+        slist.clear();
+        String s;
+        
+        String urlSList = "http://my.zi-jin.com/little/slist.php";
+        HttpURLConnection conn = null;
+        InputStream in = null;
+        try
+        {
+            URL url = new URL(urlSList);
+            conn = (HttpURLConnection)url.openConnection();
+            conn.setRequestMethod("GET");
+            in = conn.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            while ((s = reader.readLine()) != null)
+                slist.add(s);
+            in.close();
+        }
+        catch (MalformedURLException e)
+        {
+            ;
+        }
+        catch (IOException e)
+        {
+            ;
+        }
+        
+        if (conn != null)
+            conn.disconnect();
+        
+        lWarnedBeforeQuit = 0;
+        curView = views.main;
+        setContentView(R.layout.main);
+        
+        showDialog(idSListDlg);
+        
+        Log.v("start", "little");
+    }
+    public void onEditTextClick(View v)
+    {
+        InputMethodManager imm = (InputMethodManager)this.getSystemService(INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+        imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
+    }
+    
+    public static String decodeURIComponent(String s)
+    {
+        if (s == null)
+        {
+            return null;
+        }
+
+        String r = null;
+
+        try
+        {
+            r = URLDecoder.decode(s, "UTF-8");
+        }
+        // This exception should never occur.
+        catch (UnsupportedEncodingException e)
+        {
+            r = s;
+        }
+
+        return r;
+    }
+    public static String encodeURIComponent(String s)
+    {
+        String r = null;
+        try
+        {
+            r = URLEncoder.encode(s, "UTF-8").replaceAll("\\+", "%20")
+                    .replaceAll("\\%21", "!").replaceAll("\\%27", "'")
+                    .replaceAll("\\%28", "(").replaceAll("\\%29", ")")
+                    .replaceAll("\\%7E", "~");
+        }
+        // This exception should never occur.
+        catch (UnsupportedEncodingException e)
+        {
+            r = s;
+        }
+        return r;
+    }
+    
+    public static void sendCmd(String strCmd)
+    {
+    	// cgi-bin/little.cgi?
+        String urlts = new String();
+        for (String s : targets)
+        {
+            urlts += "&targets[]=" + encodeURIComponent(s);
+        }
+        Log.v("fitarget", urlts);
+    	String urlCmd = "http://my.zi-jin.com/little/little.php?key=KDIWXCBKPACVNMZ"
+    	        + urlts
+    	        + "&q="
+    			+ encodeURIComponent(strCmd);//URLEncoder.encode(strCmd);
+    	HttpURLConnection conn = null;
+    	InputStream in = null;
+    	try
+    	{
+    		URL url = new URL(urlCmd);
+    		conn = (HttpURLConnection)url.openConnection();
+    		conn.setRequestMethod("GET");
+    		in = conn.getInputStream();
+    		while (in.read() != -1);
+        	in.close();
+    	}
+    	catch (MalformedURLException e)
+    	{
+    		;
+    	}
+    	catch (IOException e)
+    	{
+    		;
+    	}
+    	
+    	if (conn != null)
+			conn.disconnect();
+    }
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if (keyCode == KeyEvent.KEYCODE_BACK)
+        {
+            if (curView == views.main)
+            {
+                if (lWarnedBeforeQuit + 2000 < System.currentTimeMillis())
+                {
+                    lWarnedBeforeQuit = System.currentTimeMillis();
+                    Toast.makeText(this, "Touch <back> again to quit.", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    finish();
+                    System.exit(0);
+                }
+            }
+            else if (curView == views.screen)
+            {
+                showDialog(idEndWatchDlg);
+            }
+            else
+            {
+                curView = views.main;
+                setContentView(R.layout.main);
+            }
+            
+            return true;
+        }
+        else
+            return super.onKeyDown(keyCode, event);
+    }
+    public Dialog onCreateDialog(int id)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        if (id == idEndWatchDlg)
+        {
+            builder.setMessage("Do you want to end receiving images?")
+            .setCancelable(false)
+            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    sendCmd(commands.watchScreenEnd.toString());
+
+                    curView = views.main;
+                    setContentView(R.layout.main);
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                }
+            })
+            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    curView = views.main;
+                    setContentView(R.layout.main);
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);            
+                }
+            });
+            
+        }
+        else if (id == idSListDlg)
+        {
+            builder.setTitle("Choose target(s)")
+                   .setMultiChoiceItems(slist.toArray(new String[0]), null,
+                           new DialogInterface.OnMultiChoiceClickListener() {                            
+                            public void onClick(DialogInterface dialog, int which, boolean isChecked)
+                            {
+                                if (isChecked)
+                                    targets.add(slist.get(which));
+                                else
+                                    targets.remove(slist.get(which));
+                            }
+                        })
+                   .setPositiveButton("OK",
+                           new DialogInterface.OnClickListener() {                            
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                StringBuilder s = new StringBuilder();
+                                s.append(targets.size());
+                                s.append(" target(s) had been chosen");
+                                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                   .setNegativeButton("Cancel",
+                           new DialogInterface.OnClickListener() {                            
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                targets.clear();
+                            }
+                        });
+        }
+        
+        return builder.create();
+    }
+    
+    // main menu    
+
+    public void onbtnWatchScreenClk(View v)
+    {
+        sendCmd(commands.watchScreenBegin.toString());
+        curView = views.screen;
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        setContentView(R.layout.screen);
+    }
+    public void onMouseView(View v)
+    {
+        curView = views.others;
+        setContentView(R.layout.mouse);
+    }
+    public void onKeybdView(View v)
+    {
+        curView = views.others;
+        setContentView(R.layout.keybd);
+    }
+    public void onPowerView(View v)
+    {
+        curView = views.others;
+        setContentView(R.layout.power);
+    }
+    public void onbtnCaptureClk(View v)
+    {
+        sendCmd(commands.capture.toString());
+    }
+    public void onOthersView(View v)
+    {
+        curView = views.others;
+        setContentView(R.layout.others);
+    }
+    
+    // mouse
+
+    public void onbtnLButtonClk(View v)
+    {
+        sendCmd(commands.lbutton.toString());
+    }
+
+    public void onbtnUpwheelClk(View v)
+    {
+        sendCmd(commands.upwheel.toString());
+    }
+
+    public void onbtnMButtonClk(View v)
+    {
+        sendCmd(commands.mbutton.toString());
+    }
+
+    public void onbtnDownwheelClk(View v)
+    {
+        sendCmd(commands.downwheel.toString());
+    }
+
+    public void onbtnRButtonClk(View v)
+    {
+        sendCmd(commands.rbutton.toString());
+    }
+
+    public void onbtnLButtonDownClk(View v)
+    {
+        sendCmd(commands.lbuttondown.toString());
+    }
+
+    public void onbtnLButtonUpClk(View v)
+    {
+        sendCmd(commands.lbuttonup.toString());
+    }
+
+    public void onbtnRButtonDownClk(View v)
+    {
+        sendCmd(commands.rbuttondown.toString());
+    }
+
+    public void onbtnRButtonUpClk(View v)
+    {
+        sendCmd(commands.rbuttonup.toString());
+    }
+    
+    // keyboard
+
+    public void onSendString(View v)
+    {
+    	String s = commands.sendString.toString();
+    	s += "#";
+    	s += ((EditText)findViewById(R.id.editString)).getText().toString();
+    	
+    	sendCmd(s);
+    }
+    public void onKdWin(View v)
+    {
+    	sendCmd(commands.kdWin.toString());
+    }
+    public void onKdUp(View v)
+    {
+    	sendCmd(commands.kdUp.toString());
+    }
+    public void onKdDown(View v)
+    {
+    	sendCmd(commands.kdDown.toString());
+    }
+    public void onKdRight(View v)
+    {
+        sendCmd(commands.kdRight.toString());
+    }
+    public void onKdLeft(View v)
+    {
+    	sendCmd(commands.kdLeft.toString());
+    }
+    public void onKdEsc(View v)
+    {
+    	sendCmd(commands.kdEsc.toString());
+    }
+    public void onKdHome(View v)
+    {
+    	sendCmd(commands.kdHome.toString());
+    }
+    public void onKdEnd(View v)
+    {
+    	sendCmd(commands.kdEnd.toString());
+    }
+    public void onKdEnter(View v)
+    {
+    	sendCmd(commands.kdEnter.toString());
+    }
+    public void onKdSpace(View v)
+    {
+    	sendCmd(commands.kdSpace.toString());
+    }
+    public void onCtrlAltDelete(View v)
+    {
+    	sendCmd(commands.CtrlAltDelete.toString());
+    }
+    public void onAltF4(View v)
+    {
+    	sendCmd(commands.AltF4.toString());
+    }
+    
+    // power
+    
+    public void onbtnShutdownClick(View v)
+    {
+        sendCmd(commands.shutdown.toString() + "#" + (((CheckBox)findViewById(R.id.checkForce)).isChecked() ? "1" : "0"));
+    }
+    public void onbtnSwitchUserClick(View v)
+    {
+        sendCmd(commands.switchUser.toString() + "#" + (((CheckBox)findViewById(R.id.checkForce)).isChecked() ? "1" : "0"));
+    }
+    public void onbtnLogOffClick(View v)
+    {
+        sendCmd(commands.logOff.toString() + "#" + (((CheckBox)findViewById(R.id.checkForce)).isChecked() ? "1" : "0"));
+    }
+    public void onbtnLockClick(View v)
+    {
+        sendCmd(commands.lock.toString() + "#" + (((CheckBox)findViewById(R.id.checkForce)).isChecked() ? "1" : "0"));
+    }
+    public void onbtnRestartClick(View v)
+    {
+        sendCmd(commands.restart.toString() + "#" + (((CheckBox)findViewById(R.id.checkForce)).isChecked() ? "1" : "0"));
+    }
+    public void onbtnSleepClick(View v)
+    {
+        sendCmd(commands.sleep.toString() + "#" + (((CheckBox)findViewById(R.id.checkForce)).isChecked() ? "1" : "0"));
+    }
+    public void onbtnHibernateClick(View v)
+    {
+        sendCmd(commands.hibernate.toString() + "#" + (((CheckBox)findViewById(R.id.checkForce)).isChecked() ? "1" : "0"));
+    }
+    
+    // others
+
+    public void onbtnRunClk(View v)
+    {
+        String str = commands.run.toString();
+        str += "#";
+        str += ((EditText)findViewById(R.id.editText)).getText().toString();
+        sendCmd(str);
+    }
+    public void onbtnRunWithNoWindowClk(View v)
+    {
+        String str = commands.runWithNoWindow.toString();
+        str += "#";
+        str += ((EditText)findViewById(R.id.editText)).getText().toString();
+        sendCmd(str);
+    }
+    public void onbtnMsgBoxClk(View v)
+    {
+        String str = commands.msgBox.toString();
+        str += "#";
+        str += ((EditText)findViewById(R.id.editText)).getText().toString();
+        sendCmd(str);
+    }
+    public void onbtnDarkClk(View v)
+    {
+        sendCmd(commands.dark.toString());
+    }
+    public void onbtnHideCursorClk(View v)
+    {
+        sendCmd(commands.hideCursor.toString());
+    }
+    public void onMultiCursorClk(View v)
+    {
+        sendCmd(commands.multiCursor.toString());
+    }
+    public void onShowTextClk(View v)
+    {
+        String str = commands.showText.toString();
+        str += "#";
+        str += ((EditText)findViewById(R.id.editText)).getText().toString();
+        sendCmd(str);
+    }
+    public void onShowTextExClk(View v)
+    {
+        // TODO
+        String str = commands.showTextEx.toString();
+        str += "#";
+        str += ((EditText)findViewById(R.id.editText)).getText().toString();
+        sendCmd(str);
+    }
+    public void onbtnShowInNotepadClk(View v)
+    {
+        String str = commands.showInNotepad.toString();
+        str += "#";
+        str += ((EditText)findViewById(R.id.editText)).getText().toString();
+        sendCmd(str);
+    }
+}

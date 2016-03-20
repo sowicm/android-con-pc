@@ -1,0 +1,126 @@
+package com.sowicm.little;
+
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.util.AttributeSet;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.SurfaceHolder.Callback;
+import android.widget.Toast;
+
+public class monitor extends SurfaceView implements Callback, Runnable
+{
+    private Thread        thr;
+    private SurfaceHolder sfh;
+    private Canvas        canvas;
+    private Paint         paint;
+    private boolean       bThrRun;
+    private URL           url;
+    private String        lastModified;
+    private Bitmap        bitmap;
+
+    public void trace(String str)
+    {
+        //Toast.makeText(getContext(), str, Toast.LENGTH_SHORT).show();
+    }
+    public monitor(Context context, AttributeSet attrs)
+    {
+        super(context, attrs);
+        sfh = getHolder();
+        sfh.addCallback(this);
+        paint = new Paint();
+        paint.setAntiAlias(true);
+        trace("constructor");
+        try
+        {
+            url = new URL("http://my.zi-jin.com/little/st.png");
+        }
+        catch (MalformedURLException e)
+        {
+        }
+    }
+    
+    public void surfaceCreated(SurfaceHolder holder)
+    {
+        trace("create");
+        thr = new Thread(this);
+        bThrRun = true;
+        thr.start();
+    }
+    
+    public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3)
+    {
+    }
+
+    public void surfaceDestroyed(SurfaceHolder arg0)
+    {
+        bThrRun = false;
+    }
+    
+    public void run()
+    {
+        //trace("start");
+        while (bThrRun)
+        {
+            //trace("render");
+            render();
+            try
+            {
+                Thread.sleep(5000);
+            }
+            catch (Exception e)
+            {
+            }
+        }
+    }
+    
+    public void render()
+    {
+        try
+        {
+            //trace("render");
+            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+            if (!lastModified.isEmpty())
+                conn.addRequestProperty("If-Modified-Since:", lastModified);
+            conn.setDoInput(true);
+            conn.connect();
+            InputStream in = conn.getInputStream();
+            //trace("connected");
+            if (conn.getResponseCode() != 200)
+            {
+                in.close();
+                return;
+            }
+            bitmap = BitmapFactory.decodeStream(in);
+            //trace("decoded");
+            in.close();
+
+            canvas = sfh.lockCanvas();
+            canvas.drawBitmap(bitmap, 0, 0, paint);
+            //trace("drawed");
+        }
+        catch (Exception e)
+        {
+        }
+        finally
+        {
+            try
+            {
+                if (canvas != null)
+                    sfh.unlockCanvasAndPost(canvas);
+            }
+            catch (Exception e)
+            {
+            }
+        }
+    }
+
+}

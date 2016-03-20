@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:keepScreenOn="true" >
+
+    <AbsoluteLayout
+        android:id="@+id/absoluteLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="0.67" >
+
+        <Button
+            android:id="@+id/btnAltF4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="5dp"
+            android:layout_y="210dp"
+            android:onClick="onAltF4"
+            android:text="@string/altf4" />
+
+        <Button
+            android:id="@+id/btnCtrlAltDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="80dp"
+            android:layout_y="210dp"
+            android:onClick="onCtrlAltDelete"
+            android:text="@string/ctralaltdelete" />
+
+        <Button
+            android:id="@+id/btnKdSpace"
+            android:layout_width="114dp"
+            android:layout_height="wrap_content"
+            android:layout_x="81dp"
+            android:layout_y="160dp"
+            android:onClick="onKdSpace"
+            android:text="@string/space" />
+
+        <Button
+            android:id="@+id/btnKdHome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="254dp"
+            android:layout_y="6dp"
+            android:onClick="onKdHome"
+            android:text="@string/home" />
+
+        <Button
+            android:id="@+id/btnKdEnd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="254dp"
+            android:layout_y="55dp"
+            android:onClick="onKdEnd"
+            android:text="@string/end" />
+
+        <Button
+            android:id="@+id/btnKdUp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="57dp"
+            android:layout_marginLeft="94dp"
+            android:layout_x="119dp"
+            android:layout_y="38dp"
+            android:onClick="onKdUp"
+            android:text="@string/_up" />
+
+        <Button
+            android:id="@+id/btnKdWin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="135dp"
+            android:layout_x="30dp"
+            android:layout_y="155dp"
+            android:onClick="onKdWin"
+            android:text="@string/win" />
+
+        <Button
+            android:id="@+id/btnKdEsc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="20dp"
+            android:layout_y="7dp"
+            android:onClick="onKdEsc"
+            android:text="@string/esc" />
+
+        <Button
+            android:id="@+id/btnKdLeft"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_x="69dp"
+            android:layout_y="88dp"
+            android:onClick="onKdLeft"
+            android:text="@string/_left" />
+
+        <Button
+            android:id="@+id/btnKdDown"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_x="119dp"
+            android:layout_y="88dp"
+            android:onClick="onKdDown"
+            android:text="@string/_down" />
+
+        <Button
+            android:id="@+id/btnKdRight"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_x="169dp"
+            android:layout_y="88dp"
+            android:onClick="onKdRight"
+            android:text="@string/_right" />
+
+        <Button
+            android:id="@+id/btnKdEnter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="258dp"
+            android:layout_y="107dp"
+            android:onClick="onKdEnter"
+            android:text="@string/enter" />
+
+    </AbsoluteLayout>
+
+</LinearLayout>

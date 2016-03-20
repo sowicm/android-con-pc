@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Little4droid</string>
+    <string name="mouse">Mouse</string>
+    <string name="keybd">Keyboard</string>
+    <string name="power">Power</string>
+    <string name="others">Others</string>
+    <string name="right">By Sowicm.com</string>
+    <string name="home">Home</string>
+    <string name="end">End</string>
+    <string name="_up">↑</string>
+    <string name="win">Win</string>
+    <string name="esc">Esc</string>
+    <string name="_left">←</string>
+    <string name="_down">↓</string>
+    <string name="_right">→</string>
+    <string name="enter">Enter</string>
+    <string name="space">Space</string>
+    <string name="sendstring">Send String</string>
+    <string name="force">Force</string>
+    <string name="shutdown">Shut down</string>
+    <string name="hibernate">Hibernate</string>
+    <string name="restart">Restart</string>
+    <string name="switchuser">Switch user</string>
+    <string name="logoff">Log off</string>
+    <string name="lock">Lock</string>
+    <string name="sleep">Sleep</string>
+    <string name="ctralaltdelete">Ctrl+Alt+Delete</string>
+    <string name="altf4">Alt+F4</string>
+    <string name="run">Run</string>
+    <string name="msgBox">MessageBox</string>
+    <string name="runnowindow">Run with no window</string>
+    <string name="dark">Dark</string>
+    <string name="hidecursor">Hide cursor</string>
+    <string name="multicursor">鼠标分身</string>
+    <string name="showText">Show Text</string>
+    <string name="lbutton">鼠标左键</string>
+    <string name="rbutton">鼠标右键</string>
+    <string name="mbutton">鼠标中键</string>
+    <string name="upwheel">上滚</string>
+    <string name="downwheel">下滚</string>
+    <string name="lbuttondown">按住左键</string>
+    <string name="lbuttonup">松开左键</string>
+    <string name="rbuttondown">按住右键</string>
+    <string name="rbuttonup">松开右键</string>
+    <string name="showtextex">Show Text Ex</string>
+    <string name="watchscreen">Watch Screen</string>
+    <string name="capture">Capture</string>
+    <string name="showinnotepad">Show in notepad</string>
+
+</resources>

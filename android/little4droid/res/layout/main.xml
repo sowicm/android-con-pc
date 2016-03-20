@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:keepScreenOn="true" >
+
+    <Button
+        android:id="@+id/screen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/watchscreen"
+        android:onClick="onbtnWatchScreenClk" />
+
+    <Button
+        android:id="@+id/mouse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="fill_horizontal"
+        android:text="@string/mouse"
+        android:onClick="onMouseView" />
+
+    <Button
+        android:id="@+id/keybd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/keybd"
+        android:onClick="onKeybdView" />
+
+    <Button
+        android:id="@+id/power"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/power"
+        android:onClick="onPowerView" />
+
+    <Button
+        android:id="@+id/capture"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/capture"
+        android:onClick="onbtnCaptureClk" />
+
+    <Button
+        android:id="@+id/others"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/others"
+        android:onClick="onOthersView" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="126dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:text="@string/right" />
+
+</LinearLayout>

@@ -1,0 +1,271 @@
+package com.sowicm.little;
+
+// .*android:onclick="(\w+)".*
+// public void \1(View v)\n{\n\n}\n
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.View;
+import android.widget.EditText;
+import android.view.inputmethod.InputMethodManager;
+
+public class little extends Activity {
+	
+	public enum commands { begin(0)
+		, mouseMove(1)
+		, lbutton(2)
+		, upwheel(3)
+		, mbutton(4)
+		, downwheel(5)
+		, rbutton(6)
+		, lbuttondown(7)
+		, lbuttonup(8)
+		, rbuttondown(9)
+		, rbuttonup(10)
+		, sendString(30)
+		, kdWin(31)
+		, kdUp(32)
+		, kdDown(33)
+		, kdRight(34)
+		, kdLeft(35)
+		, kdEsc(36)
+		, kdHome(37)
+		, kdEnd(38)
+		, kdEnter(39)
+		, kdSpace(40)
+		, CtrlAltDelete(41)
+		, AltF4(42)
+		, shutdown(60)
+		, switchUser(61)
+		, logOff(62)
+		, lock(63)
+		, restart(64)
+		, sleep(65)
+		, hibernate(66)
+		, run(70)
+		, runWithNoWindow(71)
+		, msgBox(72)
+		, showText(73)
+		, dark(74)
+		, hideCursor(75)
+		, multiCursor(76)
+		;
+		private final int n;
+		commands(int _n)
+		{
+			this.n = _n;
+		}
+		public String toString()
+		{
+			return String.valueOf(this.n);
+		}
+    };
+	
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+    }
+    public void onEditTextClick(View v)
+    {
+    	((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE)).showSoftInput(v, 0);
+    }
+    
+    public static void sendCmd(String strCmd)
+    {
+    	// cgi-bin/little.cgi?
+    	String urlCmd = "http://my.zi-jin.com/little/little2.php?key=KDIWXCBKPACVNMZ&q="
+    			+ strCmd;
+    	HttpURLConnection conn = null;
+    	InputStream in = null;
+    	try
+    	{
+    		URL url = new URL(urlCmd);
+    		conn = (HttpURLConnection)url.openConnection();
+    		conn.setRequestMethod("GET");
+    		in = conn.getInputStream();
+    		while (in.read() != -1);
+        	in.close();
+    	}
+    	catch (MalformedURLException e)
+    	{
+    		;
+    	}
+    	catch (IOException e)
+    	{
+    		;
+    	}
+    	
+    	if (conn != null)
+			conn.disconnect();
+    }
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if (keyCode == KeyEvent.KEYCODE_BACK)
+        {
+            setContentView(R.layout.main);
+            return true;
+        }
+        else
+            return super.onKeyDown(keyCode, event);
+    }
+    
+    // main menu    
+
+    public void onMouseView(View v)
+    {
+        setContentView(R.layout.mouse);
+    }
+    public void onKeybdView(View v)
+    {
+        setContentView(R.layout.keybd);
+    }
+    public void onPowerView(View v)
+    {
+        setContentView(R.layout.power);
+    }
+    public void onOthersView(View v)
+    {
+        setContentView(R.layout.others);
+    }
+    
+    // mouse
+
+    public void onbtnLButtonClk(View v)
+    {
+        sendCmd(commands.lbutton.toString());
+    }
+
+    public void onbtnUpwheelClk(View v)
+    {
+        sendCmd(commands.upwheel.toString());
+    }
+
+    public void onbtnMButtonClk(View v)
+    {
+        sendCmd(commands.mbutton.toString());
+    }
+
+    public void onbtnDownwheelClk(View v)
+    {
+        sendCmd(commands.downwheel.toString());
+    }
+
+    public void onbtnRButtonClk(View v)
+    {
+        sendCmd(commands.rbutton.toString());
+    }
+
+    public void onbtnLButtonDownClk(View v)
+    {
+        sendCmd(commands.lbuttondown.toString());
+    }
+
+    public void onbtnLButtonUpClk(View v)
+    {
+        sendCmd(commands.lbuttonup.toString());
+    }
+
+    public void onbtnRButtonDownClk(View v)
+    {
+        sendCmd(commands.rbuttondown.toString());
+    }
+
+    public void onbtnRButtonUpClk(View v)
+    {
+        sendCmd(commands.rbuttonup.toString());
+    }
+
+    public void onSendString(View v)
+    {
+    	String s = commands.sendString.toString();
+    	s += ((EditText)findViewById(R.id.editString)).getText().toString();
+    	
+    	sendCmd(s);
+    }
+    public void onKdWin(View v)
+    {
+    	sendCmd(commands.kdWin.toString());
+    }
+    public void onKdUp(View v)
+    {
+    	sendCmd(commands.kdUp.toString());
+    }
+    public void onKdDown(View v)
+    {
+    	sendCmd(commands.kdDown.toString());
+    }
+    public void onKdRight(View v)
+    {
+        sendCmd(commands.kdRight.toString());
+    }
+    public void onKdLeft(View v)
+    {
+    	sendCmd(commands.kdLeft.toString());
+    }
+    public void onKdEsc(View v)
+    {
+    	sendCmd(commands.kdEsc.toString());
+    }
+    public void onKdHome(View v)
+    {
+    	sendCmd(commands.kdHome.toString());
+    }
+    public void onKdEnd(View v)
+    {
+    	sendCmd(commands.kdEnd.toString());
+    }
+    public void onKdEnter(View v)
+    {
+    	sendCmd(commands.kdEnter.toString());
+    }
+    public void onKdSpace(View v)
+    {
+    	sendCmd(commands.kdSpace.toString());
+    }
+    public void onCtrlAltDelete(View v)
+    {
+    	sendCmd(commands.CtrlAltDelete.toString());
+    }
+    public void onAltF4(View v)
+    {
+    	sendCmd(commands.AltF4.toString());
+    }
+    public void onbtnShutdownClick(View v)
+    {
+    	
+    }
+    public void onbtnSwitchUserClick(View v)
+    {
+    	
+    }
+    public void onbtnLogOffClick(View v)
+    {
+    	
+    }
+    public void onbtnLockClick(View v)
+    {
+    	
+    }
+    public void onbtnRestartClick(View v)
+    {
+    	
+    }
+    public void onbtnSleepClick(View v)
+    {
+    	
+    }
+    public void onbtnHibernateClick(View v)
+    {
+    	
+    }
+}
